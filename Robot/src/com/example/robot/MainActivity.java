@@ -197,21 +197,21 @@ public class MainActivity extends Activity {
 	   }
 	
 	public static void driveCM(int cm) throws InterruptedException{
-		double percent= 100/104;//replace 104 with degrees
+		double percent= (double)100/72;//replace 104 with degrees
 		double newCM=cm*percent;
-		int millisecondsPerCM=100;//stop time and replace
-		int time=cm*millisecondsPerCM;
-		TimeUnit.MILLISECONDS.sleep(time);
+		double millisecondsPerCM=0.0799*1000;//stop time and replace
+		double time=cm*millisecondsPerCM;
 		robotDrive((byte) newCM);
+		Thread.sleep((int)time);
 	}
 	
 	public static void driveANGLE(int degrees) throws InterruptedException{
-		double percent= 90/105;//replace 105 with degrees
+		double percent= (double)90/78;//replace 105 with degrees
 		double newANGLE=degrees*percent;
-		int millisecondsPerDegree=100;//stop time and replace
-		int time=degrees*millisecondsPerDegree;
-		TimeUnit.MILLISECONDS.sleep(time);
+		double millisecondsPerDegree=(1.6/90)*1000;//stop time and replace
+		double time=degrees*millisecondsPerDegree;
 		robotTurn((byte) newANGLE);
+		Thread.sleep((int)time);
 	}
 
 }

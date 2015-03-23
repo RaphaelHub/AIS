@@ -5,9 +5,9 @@ public class Drive implements Runnable{
 	@Override
 	public void run() {
 		int n=0;
-		while(n>10){
+		while(n<4){
 		try {
-			MainActivity.driveCM(100);
+			MainActivity.driveCM(70);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -19,9 +19,11 @@ public class Drive implements Runnable{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		n++;
 		
 	}
-		n++;
+		
+		
 	}
 
 }
