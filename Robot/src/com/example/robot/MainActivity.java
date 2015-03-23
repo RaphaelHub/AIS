@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private static FTDriver com;
-	private TextView textLog;
+	private static TextView textLog;
 	private Button buttonW;
 	private Button buttonS;
 	private Button buttonA;
@@ -103,9 +103,9 @@ public class MainActivity extends Activity {
 		buttonRectangle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Drive driveThread=new Drive();
-				Thread t1=new Thread(driveThread);
-				t1.start();
+				Controller con=new Controller();
+				Thread c=new Thread(con);
+				c.start();
 			}
 		});
 
@@ -134,7 +134,7 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void comWrite(byte[] data) {
+	public static void comWrite(byte[] data) {
 		if (com.isConnected()) {
 			com.write(data);
 		} else {
