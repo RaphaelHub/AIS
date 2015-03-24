@@ -16,7 +16,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private static FTDriver com;
-	private static TextView textLog;
+	public static TextView textLog;
 	private Button buttonW;
 	private Button buttonS;
 	private Button buttonA;
