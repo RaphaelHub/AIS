@@ -107,9 +107,15 @@ public class MainActivity extends Activity {
 		buttonDrive100.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
+				/*try {
+					driveLongCm(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				
 				try {
-					textLog.append("drive100");
-					driveCM(100);
+					driveFromTo(0,0,0,100,50,180);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -122,7 +128,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				try {
-					driveANGLE(90);
+					turnLongDegree(360);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -263,7 +269,7 @@ public class MainActivity extends Activity {
 		double millisecondsPerCM=0.0799*1000;//stop time and replace
 		
 		int togo=(int) newCM;
-		while(cm>=127){
+		while(togo>=127){
 			driveCm2(127,(int)(127*millisecondsPerCM));
 			togo-=127;
 		}
@@ -277,11 +283,11 @@ public class MainActivity extends Activity {
 		double millisecondsPerDegree=(1.6/90)*1000;//stop time and replace
 		
 		int togo=(int) newAngle;
-		while(newAngle>=127){
+		while(togo>=127){
 			turnDegree2(127,(int)(127*millisecondsPerDegree));
 			togo-=127;
 		}
-		driveCm2(togo,(int)(togo*millisecondsPerDegree));
+		turnDegree2(togo,(int)(togo*millisecondsPerDegree));
 	}
 	
 	public static void driveCm2(int cm, int time)throws InterruptedException{
