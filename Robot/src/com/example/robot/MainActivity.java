@@ -26,6 +26,10 @@ public class MainActivity extends Activity {
 	private Button buttonPlus;
 	private Button buttonRectangle;
 	private Button disc;
+	private Button buttonDrive100;
+	private Button buttonTurn90;
+	private Button buttonSensors;
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +100,40 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				comWrite(new byte[] { 'x', '\r', '\n' });
+			}
+		});
+		
+		buttonDrive100 = (Button) findViewById(R.id.button10);
+		buttonDrive100.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				try {
+					driveCM(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		buttonTurn90 = (Button) findViewById(R.id.button11);
+		buttonTurn90.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				try {
+					driveANGLE(90);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		buttonSensors = (Button) findViewById(R.id.button12);
+		buttonSensors.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				System.out.println(comReadWrite(new byte[] { 'q', '\r', '\n' }));
 			}
 		});
 
@@ -195,6 +233,28 @@ public class MainActivity extends Activity {
 	       }
 
 	   }
+	
+	public static void driveFromTo(double fromX, double fromY, double fromAngle, double toX, double toY, double toAngle){
+		double c = Math.sqrt(Math.pow((fromX-toX), 2)+Math.pow((fromY-toY),2));
+	}
+	
+	public static void driveLongCm(int cm) throws InterruptedException{
+		int togo=cm;
+		while(cm>=127){
+			driveCM(127);
+			togo-=127;
+		}
+		driveCM(togo);
+	}
+	
+	public static void turnLongCm(int degree) throws InterruptedException{
+		int togo=degree;
+		while(degree>=127){
+			driveCM(127);
+			togo-=127;
+		}
+		driveCM(togo);
+	}
 	
 	public static void driveCM(int cm) throws InterruptedException{
 		double percent= (double)100/72;//replace 104 with degrees
