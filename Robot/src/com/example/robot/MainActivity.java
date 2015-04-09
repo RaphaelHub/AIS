@@ -41,7 +41,6 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				byte b = 'w';
 				// robotSetVelocity(b,b);
 				comWrite(new byte[] { 'w', '\r', '\n' });
 			}
@@ -103,11 +102,13 @@ public class MainActivity extends Activity {
 			}
 		});
 		
+		
 		buttonDrive100 = (Button) findViewById(R.id.button10);
 		buttonDrive100.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				try {
+					textLog.append("drive100");
 					driveCM(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -133,7 +134,7 @@ public class MainActivity extends Activity {
 		buttonSensors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				System.out.println(comReadWrite(new byte[] { 'q', '\r', '\n' }));
+				textLog.append(comReadWrite(new byte[] { 'q', '\r', '\n' }));
 			}
 		});
 
@@ -234,8 +235,26 @@ public class MainActivity extends Activity {
 
 	   }
 	
-	public static void driveFromTo(double fromX, double fromY, double fromAngle, double toX, double toY, double toAngle){
+	public static void driveFromTo(double fromX, double fromY, double fromAngle, double toX, double toY, double toAngle) throws InterruptedException{
 		double c = Math.sqrt(Math.pow((fromX-toX), 2)+Math.pow((fromY-toY),2));
+		double a = Math.abs(fromX-toX);
+		double b = Math.abs(fromY-toY);
+		double alpha = Math.round(Math.toDegrees(Math.acos(a/c)));
+		double beta = 90-alpha;
+		double toTurn1 = alpha-fromAngle;
+		double toTurn2 = toAngle-alpha;
+		
+		if(toTurn1<0){
+			toTurn1=360+toTurn1;
+		}
+		
+		if(toTurn2<0){
+			toTurn2=360+toTurn1;
+		}
+		
+		turnLongDegree((int)toTurn1);
+		driveLongCm((int)c);
+		turnLongDegree((int)toTurn2);
 	}
 	
 	public static void driveLongCm(int cm) throws InterruptedException{
@@ -247,7 +266,7 @@ public class MainActivity extends Activity {
 		driveCM(togo);
 	}
 	
-	public static void turnLongCm(int degree) throws InterruptedException{
+	public static void turnLongDegree(int degree) throws InterruptedException{
 		int togo=degree;
 		while(degree>=127){
 			driveCM(127);
