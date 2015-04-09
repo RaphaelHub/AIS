@@ -1,6 +1,5 @@
 package com.example.robot;
 
-import android.widget.SlidingDrawer;
 import android.widget.TextView;
 
 public class Read implements Runnable {
@@ -14,17 +13,27 @@ public class Read implements Runnable {
 	@Override
 	public void run() {
 		// while(true){
-		MainActivity
-				.comReadWrite(new byte[] { 'q', '\r', '\n' });
-		//String[] arr = string.split(" ");
-		// MainActivity.textLog.append(arr.length+ "+");
-		// textLog.append(string);
-		//String links = arr[2];
-		//String rechts = arr[4];
-		//String mitte = arr[3];
+		String string = MainActivity.comReadWrite(new byte[] { 'q', '\r', '\n' });
+		String[] arr = string.split(" ");
+		int [] sensor = new int [arr.length];
+		
+		for (int i = 0; i < arr.length; i++) {
+			sensor[i] = Integer.parseInt(arr[i],16);
+		}
+		
+		int links = sensor[2];
+		int rechts = sensor[4];
+		int mitte = sensor[3];
+		
+		if (links != 0 || rechts != 0 || mitte != 0) {
+			MainActivity.comReadWrite(new byte[] { 's', '\r', '\n' });
+			controller.setStatus(true);
+		}
+		
 
+		/*
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(5000);	
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -32,7 +41,7 @@ public class Read implements Runnable {
 		MainActivity.comReadWrite(new byte[] { 's', '\r', '\n' });
 
 		controller.setStatus(true);
-		// }
+		// }*/
 
 	}
 
