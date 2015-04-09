@@ -258,21 +258,40 @@ public class MainActivity extends Activity {
 	}
 	
 	public static void driveLongCm(int cm) throws InterruptedException{
-		int togo=cm;
+		double percent= (double)100/72;//replace 72 with degrees
+		double newCM=cm*percent;
+		double millisecondsPerCM=0.0799*1000;//stop time and replace
+		
+		int togo=(int) newCM;
 		while(cm>=127){
-			driveCM(127);
+			driveCm2(127,(int)(127*millisecondsPerCM));
 			togo-=127;
 		}
-		driveCM(togo);
+		driveCm2(togo,(int)(togo*millisecondsPerCM));
 	}
 	
+	
 	public static void turnLongDegree(int degree) throws InterruptedException{
-		int togo=degree;
-		while(degree>=127){
-			driveCM(127);
+		double percent= (double)90/78;//replace 105 with degrees
+		double newAngle=degree*percent;
+		double millisecondsPerDegree=(1.6/90)*1000;//stop time and replace
+		
+		int togo=(int) newAngle;
+		while(newAngle>=127){
+			turnDegree2(127,(int)(127*millisecondsPerDegree));
 			togo-=127;
 		}
-		driveCM(togo);
+		driveCm2(togo,(int)(togo*millisecondsPerDegree));
+	}
+	
+	public static void driveCm2(int cm, int time)throws InterruptedException{
+		robotDrive((byte) cm);
+		Thread.sleep((int)time);
+	}
+	
+	public static void turnDegree2(int degree, int time)throws InterruptedException{
+		robotTurn((byte) degree);
+		Thread.sleep((int)time);
 	}
 	
 	public static void driveCM(int cm) throws InterruptedException{
