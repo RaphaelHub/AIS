@@ -140,7 +140,15 @@ public class MainActivity extends Activity {
 		buttonSensors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				textLog.append(comReadWrite(new byte[] { 'q', '\r', '\n' }));
+				String x=comReadWrite(new byte[] { 'q', '\r', '\n' });
+				textLog.append(x);
+				/*String[] arrX = x.split(" ");
+				System.out.println(arrX[4] + " ewvrfawe "+ arrX[5] + " "+ arrX[6] + " "+arrX[7] + " "+arrX[8]);
+				for (int i=0; i<arrX.length;i++){
+					System.out.println(arrX[i]);
+				}*/
+				System.out.println(x);
+				
 			}
 		});
 
