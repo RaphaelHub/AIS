@@ -41,7 +41,6 @@ public class MainActivity extends Activity {
 
 			@Override
 			public void onClick(View arg0) {
-				// robotSetVelocity(b,b);
 				comWrite(new byte[] { 'w', '\r', '\n' });
 			}
 		});
