@@ -275,15 +275,16 @@ public class MainActivity extends Activity {
 		double millisecondsPerCM = 0.0799 * 1000;// stop time and replace
 
 		int togo = (int) newCM;
-		while (togo >= 127 && controller.getStatus() == false) {
-			driveCm2(127, (int) (127 * millisecondsPerCM));
+		while (togo >= 127 && controller.isStopped() == false) {
+			driveCm2(127, (int) (127 * millisecondsPerCM), controller);
 			togo -= 127;
 		}
-		if (controller.getStatus() == false)
-			driveCm2(togo, (int) (togo * millisecondsPerCM));
+		if (controller.isStopped() == false)
+			driveCm2(togo, (int) (togo * millisecondsPerCM), controller);
 	}
 
 	public static void turnLongDegree(int degree) throws InterruptedException {
+		System.out.println("drehstart");
 		double percent = (double) 90 / 78;// replace 105 with degrees
 		double newAngle = degree * percent;
 		double millisecondsPerDegree = (1.6 / 90) * 1000;// stop time and
@@ -295,11 +296,19 @@ public class MainActivity extends Activity {
 			togo -= 127;
 		}
 		turnDegree2(togo, (int) (togo * millisecondsPerDegree));
+		System.out.println("drehende");
 	}
 
-	public static void driveCm2(int cm, int time) throws InterruptedException {
+	public static void driveCm2(int cm, int time, Controller controller)
+			throws InterruptedException {
 		robotDrive((byte) cm);
-		Thread.sleep((int) time);
+		while (controller.isStopped() == false) {
+			while (time > 500) {
+				Thread.sleep((int) 500);
+				time -= 500;
+			}
+			Thread.sleep(time);
+		}
 	}
 
 	public static void turnDegree2(int degree, int time)
