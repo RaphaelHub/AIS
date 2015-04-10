@@ -93,7 +93,12 @@ public class Read implements Runnable {
 				MainActivity.comReadWrite(new byte[] { 's', '\r', '\n' });
 				controller.setStatus(true);
 				System.out.println("sensor: stop");
-				return;
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			try {
 				Thread.sleep(200);

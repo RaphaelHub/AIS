@@ -20,22 +20,30 @@ public class Drive implements Runnable {
 					e.printStackTrace();
 				}
 			} else {
-				return;
+				try {
+					System.out.println("bla1");
+					Thread.sleep(1000);
+					System.out.println("bla2");
+					MainActivity.turnLongDegree(90);
+					System.out.println("bla3");
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				controller.setStatus(false);
+				continue;
 			}
-			if (controller.getStatus() == false) {
+//			if (controller.getStatus() == false) {
 //				try {
 //					MainActivity.driveANGLE(90);
 //				} catch (InterruptedException e) {
 //					// TODO Auto-generated catch block
 //					e.printStackTrace();
 //				}
-			} else {
-				return;
-			}
+//			} else {
+//				return;
+//			}
 			n++;
-
 		}
-
 	}
-
 }
