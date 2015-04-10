@@ -14,7 +14,7 @@ public class Drive implements Runnable {
 		while (true) {
 			if (controller.getStatus() == false) {
 				try {
-					MainActivity.driveLongCm(70, controller);
+					MainActivity.driveLongCm(100, controller);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -23,12 +23,12 @@ public class Drive implements Runnable {
 				return;
 			}
 			if (controller.getStatus() == false) {
-				try {
-					MainActivity.driveANGLE(90);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+//				try {
+//					MainActivity.driveANGLE(90);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 			} else {
 				return;
 			}

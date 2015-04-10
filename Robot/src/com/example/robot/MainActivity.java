@@ -264,7 +264,7 @@ public class MainActivity extends Activity {
 		}
 
 		turnLongDegree((int) toTurn1);
-	//	driveLongCm((int) c);
+		// driveLongCm((int) c);
 		turnLongDegree((int) toTurn2);
 	}
 
