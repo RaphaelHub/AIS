@@ -20,8 +20,8 @@ public class Read implements Runnable {
 		int[] sensor = new int[arr.length];
 		
 		/* cast form hexa to dezimal 2 -> first two indices are ' '*/
-		for (int i = 0; i < arr.length; i++) {
-			System.out.println(sensor[i]);
+		for (int i = 1; i < arr.length; i++) {
+			System.out.println("sensor: "+sensor[i]);
 			/*Substring because of 0x...*/
 			try {
 			sensor[i] = Integer.parseInt(arr[i].substring(2), 16);
@@ -29,7 +29,7 @@ public class Read implements Runnable {
 				
 			}
 		}
-System.out.println(sensor[2]);
+System.out.println("sensor: "+sensor[2]);
 		
 //	int links = sensor[2];
 //	int rechts = sensor[4];
