@@ -11,10 +11,10 @@ public class Drive implements Runnable {
 	@Override
 	public void run() {
 		int n = 0;
-		while (n < 1) {
+		while (true) {
 			if (controller.getStatus() == false) {
 				try {
-					MainActivity.driveLongCm(200, controller);
+					MainActivity.driveLongCm(70, controller);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -23,12 +23,12 @@ public class Drive implements Runnable {
 				return;
 			}
 			if (controller.getStatus() == false) {
-//				try {
-//					MainActivity.driveANGLE(90);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				try {
+					MainActivity.driveANGLE(90);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} else {
 				return;
 			}

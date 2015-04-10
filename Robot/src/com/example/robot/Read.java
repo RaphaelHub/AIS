@@ -34,7 +34,6 @@ public class Read implements Runnable {
 			for (int i = 3; i < arr.length; i++) {
 				//System.out.println("sensor: " + i + " " + arr[i]);
 				/* Substring because of 0x... */
-
 				sensor[i] = Integer.parseInt(arr[i].substring(2), 16);
 				//System.out.println("sensor: dez: " + i + " " + sensor[i]);
 
@@ -47,7 +46,7 @@ public class Read implements Runnable {
 
 		//	System.out.println("sensor: " + links + " " + mitte + " " + rechts);
 
-			if (mitte < 35) {
+			if (mitte < 25) {
 				/* stop vehicle */
 				 MainActivity.comReadWrite(new byte[] { 's', '\r', '\n' });
 				 controller.setStatus(true);
