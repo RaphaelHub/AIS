@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import jp.ksksue.driver.serial.FTDriver;
 import android.app.Activity;
+import android.graphics.Bitmap.Config;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,7 +30,6 @@ public class MainActivity extends Activity {
 	private Button buttonDrive100;
 	private Button buttonTurn90;
 	private Button buttonSensors;
-	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +45,8 @@ public class MainActivity extends Activity {
 				comWrite(new byte[] { 'w', '\r', '\n' });
 			}
 		});
-		
-		disc=(Button) findViewById(R.id.button9);
+
+		disc = (Button) findViewById(R.id.button9);
 		disc.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -101,28 +101,25 @@ public class MainActivity extends Activity {
 				comWrite(new byte[] { 'x', '\r', '\n' });
 			}
 		});
-		
-		
+
 		buttonDrive100 = (Button) findViewById(R.id.button10);
 		buttonDrive100.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				/*try {
-					driveLongCm(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}*/
-				
+				/*
+				 * try { driveLongCm(200); } catch (InterruptedException e) { //
+				 * TODO Auto-generated catch block e.printStackTrace(); }
+				 */
+
 				try {
-					driveFromTo(0,0,0,100,50,180);
+					driveFromTo(0, 0, 0, 100, 50, 180);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		});
-		
+
 		buttonTurn90 = (Button) findViewById(R.id.button11);
 		buttonTurn90.setOnClickListener(new OnClickListener() {
 			@Override
@@ -135,20 +132,21 @@ public class MainActivity extends Activity {
 				}
 			}
 		});
-		
+
 		buttonSensors = (Button) findViewById(R.id.button12);
 		buttonSensors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				String x=comReadWrite(new byte[] { 'q', '\r', '\n' });
+				String x = comReadWrite(new byte[] { 'q', '\r', '\n' });
 				textLog.append(x);
-				/*String[] arrX = x.split(" ");
-				System.out.println(arrX[4] + " ewvrfawe "+ arrX[5] + " "+ arrX[6] + " "+arrX[7] + " "+arrX[8]);
-				for (int i=0; i<arrX.length;i++){
-					System.out.println(arrX[i]);
-				}*/
+				/*
+				 * String[] arrX = x.split(" "); System.out.println(arrX[4] +
+				 * " ewvrfawe "+ arrX[5] + " "+ arrX[6] + " "+arrX[7] +
+				 * " "+arrX[8]); for (int i=0; i<arrX.length;i++){
+				 * System.out.println(arrX[i]); }
+				 */
 				System.out.println(x);
-				
+
 			}
 		});
 
@@ -156,8 +154,8 @@ public class MainActivity extends Activity {
 		buttonRectangle.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Controller con=new Controller();
-				Thread c=new Thread(con);
+				Controller con = new Controller();
+				Thread c = new Thread(con);
 				c.start();
 			}
 		});
@@ -228,102 +226,105 @@ public class MainActivity extends Activity {
 	public void robotSetBar(byte value) {
 		comReadWrite(new byte[] { 'o', value, '\r', '\n' });
 	}
-	
+
 	public static void robotDrive(byte distance_cm) {
-		comReadWrite(
-				new byte[] { 'k', distance_cm, '\r', '\n' }
-				);
+		comReadWrite(new byte[] { 'k', distance_cm, '\r', '\n' });
 	}
 
 	public static void robotTurn(byte degree) {
-		comReadWrite(
-				new byte[] { 'l', degree, '\r', '\n' }
-				);
+		comReadWrite(new byte[] { 'l', degree, '\r', '\n' });
 	}
-	
-	public void disconnect() {
-	       com.end();
-	       if (!com.isConnected()) {
-	           textLog.append("disconnected");
-	       }
 
-	   }
-	
-	public static void driveFromTo(double fromX, double fromY, double fromAngle, double toX, double toY, double toAngle) throws InterruptedException{
-		double c = Math.sqrt(Math.pow((fromX-toX), 2)+Math.pow((fromY-toY),2));
-		double a = Math.abs(fromX-toX);
-		double b = Math.abs(fromY-toY);
-		double alpha = Math.round(Math.toDegrees(Math.acos(a/c)));
-		double beta = 90-alpha;
-		double toTurn1 = alpha-fromAngle;
-		double toTurn2 = toAngle-alpha;
-		
-		if(toTurn1<0){
-			toTurn1=360+toTurn1;
+	public void disconnect() {
+		com.end();
+		if (!com.isConnected()) {
+			textLog.append("disconnected");
 		}
-		
-		if(toTurn2<0){
-			toTurn2=360+toTurn1;
-		}
-		
-		turnLongDegree((int)toTurn1);
-		driveLongCm((int)c);
-		turnLongDegree((int)toTurn2);
+
 	}
-	
-	public static void driveLongCm(int cm) throws InterruptedException{
-		double percent= (double)100/72;//replace 72 with degrees
-		double newCM=cm*percent;
-		double millisecondsPerCM=0.0799*1000;//stop time and replace
-		
-		int togo=(int) newCM;
-		while(togo>=127){
-			driveCm2(127,(int)(127*millisecondsPerCM));
-			togo-=127;
+
+	public static void driveFromTo(double fromX, double fromY,
+			double fromAngle, double toX, double toY, double toAngle)
+			throws InterruptedException {
+		double c = Math.sqrt(Math.pow((fromX - toX), 2)
+				+ Math.pow((fromY - toY), 2));
+		double a = Math.abs(fromX - toX);
+		double b = Math.abs(fromY - toY);
+		double alpha = Math.round(Math.toDegrees(Math.acos(a / c)));
+		double beta = 90 - alpha;
+		double toTurn1 = alpha - fromAngle;
+		double toTurn2 = toAngle - alpha;
+
+		if (toTurn1 < 0) {
+			toTurn1 = 360 + toTurn1;
 		}
-		driveCm2(togo,(int)(togo*millisecondsPerCM));
-	}
-	
-	
-	public static void turnLongDegree(int degree) throws InterruptedException{
-		double percent= (double)90/78;//replace 105 with degrees
-		double newAngle=degree*percent;
-		double millisecondsPerDegree=(1.6/90)*1000;//stop time and replace
-		
-		int togo=(int) newAngle;
-		while(togo>=127){
-			turnDegree2(127,(int)(127*millisecondsPerDegree));
-			togo-=127;
+
+		if (toTurn2 < 0) {
+			toTurn2 = 360 + toTurn1;
 		}
-		turnDegree2(togo,(int)(togo*millisecondsPerDegree));
+
+		turnLongDegree((int) toTurn1);
+	//	driveLongCm((int) c);
+		turnLongDegree((int) toTurn2);
 	}
-	
-	public static void driveCm2(int cm, int time)throws InterruptedException{
+
+	public static void driveLongCm(int cm, Controller controller)
+			throws InterruptedException {
+		double percent = (double) 100 / 72;// replace 72 with degrees
+		double newCM = cm * percent;
+		double millisecondsPerCM = 0.0799 * 1000;// stop time and replace
+
+		int togo = (int) newCM;
+		while (togo >= 127 && controller.getStatus() == false) {
+			driveCm2(127, (int) (127 * millisecondsPerCM));
+			togo -= 127;
+		}
+		if (controller.getStatus() == false)
+			driveCm2(togo, (int) (togo * millisecondsPerCM));
+	}
+
+	public static void turnLongDegree(int degree) throws InterruptedException {
+		double percent = (double) 90 / 78;// replace 105 with degrees
+		double newAngle = degree * percent;
+		double millisecondsPerDegree = (1.6 / 90) * 1000;// stop time and
+															// replace
+
+		int togo = (int) newAngle;
+		while (togo >= 127) {
+			turnDegree2(127, (int) (127 * millisecondsPerDegree));
+			togo -= 127;
+		}
+		turnDegree2(togo, (int) (togo * millisecondsPerDegree));
+	}
+
+	public static void driveCm2(int cm, int time) throws InterruptedException {
 		robotDrive((byte) cm);
-		Thread.sleep((int)time);
+		Thread.sleep((int) time);
 	}
-	
-	public static void turnDegree2(int degree, int time)throws InterruptedException{
+
+	public static void turnDegree2(int degree, int time)
+			throws InterruptedException {
 		robotTurn((byte) degree);
-		Thread.sleep((int)time);
+		Thread.sleep((int) time);
 	}
-	
-	public static void driveCM(int cm) throws InterruptedException{
-		double percent= (double)100/72;//replace 104 with degrees
-		double newCM=cm*percent;
-		double millisecondsPerCM=0.0799*1000;//stop time and replace
-		double time=cm*millisecondsPerCM;
+
+	public static void driveCM(int cm) throws InterruptedException {
+		double percent = (double) 100 / 72;// replace 104 with degrees
+		double newCM = cm * percent;
+		double millisecondsPerCM = 0.0799 * 1000;// stop time and replace
+		double time = cm * millisecondsPerCM;
 		robotDrive((byte) newCM);
-		Thread.sleep((int)time);
+		Thread.sleep((int) time);
 	}
-	
-	public static void driveANGLE(int degrees) throws InterruptedException{
-		double percent= (double)90/78;//replace 105 with degrees
-		double newANGLE=degrees*percent;
-		double millisecondsPerDegree=(1.6/90)*1000;//stop time and replace
-		double time=degrees*millisecondsPerDegree;
+
+	public static void driveANGLE(int degrees) throws InterruptedException {
+		double percent = (double) 90 / 78;// replace 105 with degrees
+		double newANGLE = degrees * percent;
+		double millisecondsPerDegree = (1.6 / 90) * 1000;// stop time and
+															// replace
+		double time = degrees * millisecondsPerDegree;
 		robotTurn((byte) newANGLE);
-		Thread.sleep((int)time);
+		Thread.sleep((int) time);
 	}
 
 }

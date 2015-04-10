@@ -22,6 +22,9 @@ public class Controller implements Runnable{
 		//}
 	}
 	
+	/**
+	 * @return true if stopped
+	 */
 	public boolean getStatus() {
 		return stop;
 	}
