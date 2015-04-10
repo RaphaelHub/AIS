@@ -46,7 +46,7 @@ public class Read implements Runnable {
 
 		//	System.out.println("sensor: " + links + " " + mitte + " " + rechts);
 
-			if (mitte < 25) {
+			if (mitte < 25 ) {
 				/* stop vehicle */
 				 MainActivity.comReadWrite(new byte[] { 's', '\r', '\n' });
 				 controller.setStatus(true);
