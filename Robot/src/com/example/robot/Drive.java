@@ -10,42 +10,18 @@ public class Drive implements Runnable {
 
 	@Override
 	public void run() {
-		int n = 0;
+		//MainActivity main = new MainActivity(controller);
 		while (true) {
 			if (controller.isStopped() == false) {
-				try {
-					MainActivity.driveLongCm(100, controller);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				try {
-					Thread.sleep(3000);
-					controller.setTurnLock(true);
-					System.out.println("LOCK" + true);
-					MainActivity.turnLongDegree(90);
-					Thread.sleep(3000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				System.out.println("LOCK2" + false);
-				controller.setStop(false);	//wird nicht gesetzt
-				controller.setTurnLock(false);
-				continue;
+				//MainActivity.driveFromTo(MainActivity.x_now, MainActivity.y_now, MainActivity.theta_now, 100.0,0.0,0.0);
+				MainActivity.drive(50);
+			} 
+			else {
+				// surround object
+				MainActivity.turn('l', 90);
+				MainActivity.drive(20);
+				controller.setStop(false);
 			}
-//			if (controller.getStatus() == false) {
-//				try {
-//					MainActivity.driveANGLE(90);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			} else {
-//				return;
-//			}
-			n++;
 		}
 	}
 }

@@ -17,48 +17,43 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
 
 	private static FTDriver com;
+	private Controller controller;
 	public static TextView textLog;
 	private Button buttonW;
-	private Button buttonS;
 	private Button buttonA;
+	private Button buttonS;
 	private Button buttonD;
 	private Button buttonX;
 	private Button buttonMinus;
 	private Button buttonPlus;
-	private Button buttonRectangle;
-	private Button disc;
-	private Button buttonDrive100;
-	private Button buttonTurn90;
 	private Button buttonSensors;
+	private Button disc;
+	private Button trys;
+
+	public static byte velocity = 20;
+	public static byte neg_velocity = -20;
+	public static double x_now = 0;
+	public static double y_now = 0;
+	public static double theta_now = 0;
+
+//	public MainActivity(Controller controll) {
+//		controller = controll;
+//	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		textLog = (TextView) findViewById(R.id.textView1);
+		com = new FTDriver((UsbManager) getSystemService(USB_SERVICE));
+		com.begin(9600);
+
 		buttonW = (Button) findViewById(R.id.button1);
 		buttonW.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View arg0) {
-				// robotSetVelocity(b,b);
 				comWrite(new byte[] { 'w', '\r', '\n' });
-			}
-		});
-
-		disc = (Button) findViewById(R.id.button9);
-		disc.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				disconnect();
-			}
-		});
-
-		buttonS = (Button) findViewById(R.id.button4);
-		buttonS.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				comWrite(new byte[] { 's', '\r', '\n' });
 			}
 		});
 
@@ -70,27 +65,19 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		buttonD = (Button) findViewById(R.id.button3);
+		buttonS = (Button) findViewById(R.id.button3);
+		buttonS.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				comWrite(new byte[] { 's', '\r', '\n' });
+			}
+		});
+
+		buttonD = (Button) findViewById(R.id.button4);
 		buttonD.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				comWrite(new byte[] { 'd', '\r', '\n' });
-			}
-		});
-
-		buttonMinus = (Button) findViewById(R.id.button7);
-		buttonMinus.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				comWrite(new byte[] { '-', '\r', '\n' });
-			}
-		});
-
-		buttonPlus = (Button) findViewById(R.id.button6);
-		buttonPlus.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				comWrite(new byte[] { '+', '\r', '\n' });
 			}
 		});
 
@@ -102,69 +89,62 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		buttonDrive100 = (Button) findViewById(R.id.button10);
-		buttonDrive100.setOnClickListener(new OnClickListener() {
+		buttonMinus = (Button) findViewById(R.id.button8);
+		buttonMinus.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				/*
-				 * try { driveLongCm(200); } catch (InterruptedException e) { //
-				 * TODO Auto-generated catch block e.printStackTrace(); }
-				 */
-
-				try {
-					driveFromTo(0, 0, 0, 100, 50, 180);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				comWrite(new byte[] { '-', '\r', '\n' });
 			}
 		});
 
-		buttonTurn90 = (Button) findViewById(R.id.button11);
-		buttonTurn90.setOnClickListener(new OnClickListener() {
+		buttonPlus = (Button) findViewById(R.id.button9);
+		buttonPlus.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				try {
-					turnLongDegree(360);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				comWrite(new byte[] { '+', '\r', '\n' });
 			}
 		});
 
-		buttonSensors = (Button) findViewById(R.id.button12);
+		buttonSensors = (Button) findViewById(R.id.button7);
 		buttonSensors.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				String x = comReadWrite(new byte[] { 'q', '\r', '\n' });
 				textLog.append(x);
-				/*
-				 * String[] arrX = x.split(" "); System.out.println(arrX[4] +
-				 * " ewvrfawe "+ arrX[5] + " "+ arrX[6] + " "+arrX[7] +
-				 * " "+arrX[8]); for (int i=0; i<arrX.length;i++){
-				 * System.out.println(arrX[i]); }
-				 */
 				System.out.println(x);
 
 			}
 		});
 
-		buttonRectangle = (Button) findViewById(R.id.button8);
-		buttonRectangle.setOnClickListener(new OnClickListener() {
+		disc = (Button) findViewById(R.id.button6);
+		disc.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				Controller con = new Controller();
-				Thread c = new Thread(con);
-				c.start();
+				disconnect();
 			}
 		});
 
-		textLog = (TextView) findViewById(R.id.textView1);
-		com = new FTDriver((UsbManager) getSystemService(USB_SERVICE));
-		com.begin(9600);
+		trys = (Button) findViewById(R.id.button10);
+		trys.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Controller contr = new Controller();
+				contr.run();
 
+				// Stopwatch stopwatch1 = new Stopwatch();
+				// double time1 = stopwatch1.elapsedTime();
+				// System.out.println("time1: " + time1);
+
+				// driveFromTo(x_now,y_now,theta_now, -50, -50, 90);
+
+			}
+		});
 	}
+
+	// ***************************** END BUTTONS
+	// **********************************************
+	// ***************************** START BASIC FUNCTIONS
+	// *************************************
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -215,7 +195,7 @@ public class MainActivity extends Activity {
 		return comRead();
 	}
 
-	public void robotSetVelocity(byte left, byte right) {
+	public static void robotSetVelocity(byte left, byte right) {
 		comReadWrite(new byte[] { 'i', left, right, '\r', '\n' });
 	}
 
@@ -243,9 +223,62 @@ public class MainActivity extends Activity {
 
 	}
 
-	public static void driveFromTo(double fromX, double fromY,
-			double fromAngle, double toX, double toY, double toAngle)
-			throws InterruptedException {
+	// ***************************** END BASIC FUNCTIONS
+	// *************************************
+	// ***************************** START SPECIFIC FUNCTIONS
+	// *************************************
+
+	public static void drive(int cm) {
+		try {
+			robotSetVelocity(velocity, velocity);
+			int time = (int) ((double) cm * 1000 / 19.35);
+			Thread.sleep(time);
+			comWrite(new byte[] { 's', '\r', '\n' });
+
+			double dX = cm * Math.cos(Math.toRadians(theta_now));
+			double dY = cm * Math.sin(Math.toRadians(theta_now));
+			x_now += dX;
+			y_now += dY;
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("Positon: X: " + x_now + "  Y: " + y_now + "  Theta: " + theta_now);
+	}
+
+	public static void turn(char dir, int degrees) {
+		try {
+			if (dir == 'r') {
+				robotSetVelocity(velocity, neg_velocity);
+				theta_now -= degrees;
+			}
+			if (dir == 'l') {
+				robotSetVelocity(neg_velocity, velocity);
+				theta_now += degrees;
+			}
+			int time = (int) ((double) degrees * 1000 / (118));
+			Thread.sleep(time);
+			comWrite(new byte[] { 's', '\r', '\n' });
+			if (theta_now >= 360) {
+				theta_now -= 360;
+			}
+			if (theta_now <= -360) {
+				theta_now += 360;
+			}
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		System.out.println("Positon: X: " + x_now + "  Y: " + y_now + "  Theta: " + theta_now);
+
+	}
+
+	public static void driveFromTo(double fromX, double fromY, double fromAngle,
+			double toX, double toY, double toAngle) {
 		double c = Math.sqrt(Math.pow((fromX - toX), 2)
 				+ Math.pow((fromY - toY), 2));
 		double a = Math.abs(fromX - toX);
@@ -254,86 +287,23 @@ public class MainActivity extends Activity {
 		double beta = 90 - alpha;
 		double toTurn1 = alpha - fromAngle;
 		double toTurn2 = toAngle - alpha;
-
+		System.out.println("halo1");
 		if (toTurn1 < 0) {
-			toTurn1 = 360 + toTurn1;
+			turn('r', (int) toTurn1);
+		} else {
+			turn('l', (int) toTurn1);
 		}
-
+		System.out.println("halo2");
+		drive((int) c);
+		System.out.println("halo3");
 		if (toTurn2 < 0) {
-			toTurn2 = 360 + toTurn1;
+			turn('r', (int) toTurn1);
+		} else {
+			turn('r', (int) toTurn2);
 		}
-
-		turnLongDegree((int) toTurn1);
-		// driveLongCm((int) c);
-		turnLongDegree((int) toTurn2);
+		System.out.println("halo4");
 	}
-
-	public static void driveLongCm(int cm, Controller controller)
-			throws InterruptedException {
-		double percent = (double) 100 / 72;// replace 72 with degrees
-		double newCM = cm * percent;
-		double millisecondsPerCM = 0.0799 * 1000;// stop time and replace
-
-		int togo = (int) newCM;
-		while (togo >= 127 && controller.isStopped() == false) {
-			driveCm2(127, (int) (127 * millisecondsPerCM), controller);
-			togo -= 127;
-		}
-		if (controller.isStopped() == false)
-			driveCm2(togo, (int) (togo * millisecondsPerCM), controller);
-	}
-
-	public static void turnLongDegree(int degree) throws InterruptedException {
-		System.out.println("drehstart");
-		double percent = (double) 90 / 78;// replace 105 with degrees
-		double newAngle = degree * percent;
-		double millisecondsPerDegree = (1.6 / 90) * 1000;// stop time and
-															// replace
-
-		int togo = (int) newAngle;
-		while (togo >= 127) {
-			turnDegree2(127, (int) (127 * millisecondsPerDegree));
-			togo -= 127;
-		}
-		turnDegree2(togo, (int) (togo * millisecondsPerDegree));
-		System.out.println("drehende");
-	}
-
-	public static void driveCm2(int cm, int time, Controller controller)
-			throws InterruptedException {
-		robotDrive((byte) cm);
-		while (controller.isStopped() == false) {
-			while (time > 500) {
-				Thread.sleep((int) 500);
-				time -= 500;
-			}
-			Thread.sleep(time);
-		}
-	}
-
-	public static void turnDegree2(int degree, int time)
-			throws InterruptedException {
-		robotTurn((byte) degree);
-		Thread.sleep((int) time);
-	}
-
-	public static void driveCM(int cm) throws InterruptedException {
-		double percent = (double) 100 / 72;// replace 104 with degrees
-		double newCM = cm * percent;
-		double millisecondsPerCM = 0.0799 * 1000;// stop time and replace
-		double time = cm * millisecondsPerCM;
-		robotDrive((byte) newCM);
-		Thread.sleep((int) time);
-	}
-
-	public static void driveANGLE(int degrees) throws InterruptedException {
-		double percent = (double) 90 / 78;// replace 105 with degrees
-		double newANGLE = degrees * percent;
-		double millisecondsPerDegree = (1.6 / 90) * 1000;// stop time and
-															// replace
-		double time = degrees * millisecondsPerDegree;
-		robotTurn((byte) newANGLE);
-		Thread.sleep((int) time);
-	}
-
+	
+	public static boolean ReadSensorsMain(){
+		return false;}
 }
