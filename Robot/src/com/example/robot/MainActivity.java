@@ -34,8 +34,10 @@ public class MainActivity extends Activity {
 	public static double x_now = 0;
 	public static double y_now = 0;
 	public static double theta_now = 0;
-	
+
 	public static boolean stopped;
+	public static Stopwatch stopwatch;
+	public static double stoptime=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -125,28 +127,15 @@ public class MainActivity extends Activity {
 		trys.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				
-				Drive driveThread = new Drive();
-				Read stopThread = new Read();
-				Thread t1 = new Thread(driveThread);
-				Thread t2 = new Thread(stopThread);
-				t1.start();
-				t2.start();
-				
-				
-				// Stopwatch stopwatch1 = new Stopwatch();
-				// double time1 = stopwatch1.elapsedTime();
-				// System.out.println("time1: " + time1);
-
-//				driveFromTo(x_now,y_now,theta_now, 50, 50, 90);
-//				driveFromTo(x_now,y_now,theta_now, 50, 0, -90);
-//				driveFromTo(x_now,y_now,theta_now, -50, 50, 270);
-//				driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				
-//				driveFromTo(x_now,y_now,theta_now, 0, 50, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);								
-
+				setUp();
+//				drive(20);
+//				drive(10);
+//				drive(30);
+				// driveFromTo(x_now,y_now,theta_now, 50, 50, 90);
+				// driveFromTo(x_now,y_now,theta_now, 50, 0, -90);
+				// driveFromTo(x_now,y_now,theta_now, -50, 50, 270);
+				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
 			}
 		});
 	}
@@ -232,13 +221,21 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
-	public static boolean isStopped(){
+
+	public static boolean isStopped() {
 		return stopped;
 	}
-	
-	public static void  setStop(boolean bool){
-		stopped=bool;
+
+	public static void setStop(boolean bool) {
+		stopped = bool;
+	}
+
+	public static double getStopime() {
+		return stoptime;
+	}
+
+	public static void stopStoptime(Stopwatch stoptime1) {
+		stoptime=stopwatch.elapsedTime();
 	}
 
 	// ***************************** END BASIC FUNCTIONS
@@ -246,34 +243,56 @@ public class MainActivity extends Activity {
 	// ***************************** START SPECIFIC FUNCTIONS
 	// *************************************
 
-	public static void drive(double cm) {
-		System.out.println("Before: Positon: X: " + x_now + "  Y: " + y_now
+	public static void setUp() {
+		Drive driveThread = new Drive();
+		Read stopThread = new Read();
+		Thread t1 = new Thread(driveThread);
+		Thread t2 = new Thread(stopThread);
+		t1.start();
+		t2.start();
+	}
+	public static void printPosition(){
+		System.out.println("Positon: X: " + x_now + "  Y: " + y_now
 				+ "  Theta: " + theta_now);
+	}
+
+	public static void drive(double cm) {
 		try {
 			robotSetVelocity(velocity, velocity);
-			int time = (int) (cm * 1000 / 19.35);
-			Thread.sleep(time);
+			stopwatch = new Stopwatch();
+			stopwatch.start();
+			int sleeptime = (int) (cm * 1000 / 19.35);
+			Thread.sleep(sleeptime);
 			comWrite(new byte[] { 's', '\r', '\n' });
-
-			double dX = cm * Math.cos(Math.toRadians(theta_now));
-			double dY = cm * Math.sin(Math.toRadians(theta_now));
-			x_now += Math.round(dX);
-			y_now += Math.round(dY);
+		//	System.out.println("stoptime: " + );
+			if(!stopped){
+				double dX = cm * Math.cos(Math.toRadians(theta_now));
+				double dY = cm * Math.sin(Math.toRadians(theta_now));
+				x_now += Math.round(dX);
+				y_now += Math.round(dY);
+			}
+			else{
+				System.out.println(stoptime);
+				double drivencm = stoptime * 19.35;
+				double dX = drivencm * Math.cos(Math.toRadians(theta_now));
+				double dY = drivencm * Math.sin(Math.toRadians(theta_now));
+				x_now += Math.round(dX);
+				y_now += Math.round(dY);
+			}
+			stoptime=0;
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		System.out.println("Positon: X: " + x_now + "  Y: " + y_now
+		System.out.println("Driven, Positon: X: " + x_now + "  Y: " + y_now
 				+ "  Theta: " + theta_now);
 	}
 
 	public static void turn(char dir, double d) {
-		System.out.println("Before: Positon: X: " + x_now + "  Y: " + y_now
-				+ "  Theta: " + theta_now);
 		try {
-			if (d == 0){
+			if (d == 0) {
 				return;
 			}
 			if (dir == 'r') {
@@ -299,9 +318,8 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 
-		System.out.println("Positon: X: " + x_now + "  Y: " + y_now
+		System.out.println("Turned, Positon: X: " + x_now + "  Y: " + y_now
 				+ "  Theta: " + theta_now);
-
 	}
 
 	public static boolean ReadSensorsMain() {
@@ -343,81 +361,73 @@ public class MainActivity extends Activity {
 		double b = Math.abs(fromY - toY);
 		double c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
 		double alpha = Math.toDegrees(Math.acos(a / c));
-		double beta = 90-alpha;
-		//double beta = 90 - alpha;
+		double beta = 90 - alpha;
+		// double beta = 90 - alpha;
 		double toTurn1 = 0;
 		double toTurn2 = 0;
-		
+
 		if (fromX == toX && fromY == toY) {
 			return;
 		}
 
-		else if (fromX < toX && fromY == toY) { //nach rechts
+		else if (fromX < toX && fromY == toY) { // nach rechts
 			System.out.println("rechts");
 			toTurn1 = -fromAngle;
 			toTurn2 = toAngle;
-		}
-		else if (fromX == toX && fromY < toY) { //nach oben
+		} else if (fromX == toX && fromY < toY) { // nach oben
 			System.out.println("oben");
 			toTurn1 = 90 - fromAngle;
-			toTurn2 = toAngle -90;
-		}
-		else if (fromX > toX && fromY == toY) { //nach links
+			toTurn2 = toAngle - 90;
+		} else if (fromX > toX && fromY == toY) { // nach links
 			System.out.println("links");
 			toTurn1 = 180 - fromAngle;
-			toTurn2 = toAngle -180;
-		}
-		else if (fromX == toX && fromY > toY) { //nach unten
+			toTurn2 = toAngle - 180;
+		} else if (fromX == toX && fromY > toY) { // nach unten
 			System.out.println("unten");
 			toTurn1 = 270 - fromAngle;
-			toTurn2 = toAngle -270;
+			toTurn2 = toAngle - 270;
 		}
-		
-		//-------------------------------------------------
-		
-		else if (fromX < toX && fromY < toY) { // nach oben rechts 
+
+		// -------------------------------------------------
+
+		else if (fromX < toX && fromY < toY) { // nach oben rechts
 			System.out.println("oben rechts, " + alpha);
 			toTurn1 = alpha - fromAngle;
 			toTurn2 = toAngle - alpha;
 			System.out.println(toTurn1 + " " + toTurn2);
-		}
-		else if (fromX > toX && fromY < toY) { // nach oben links
+		} else if (fromX > toX && fromY < toY) { // nach oben links
 			System.out.println("oben links, " + alpha);
-			toTurn1 = (beta+90) - fromAngle;
-			toTurn2 = toAngle - (beta+90) ;
+			toTurn1 = (beta + 90) - fromAngle;
+			toTurn2 = toAngle - (beta + 90);
 			System.out.println(toTurn1 + " " + toTurn2);
-		}
-		else if (fromX > toX && fromY > toY) { // nach unten links
+		} else if (fromX > toX && fromY > toY) { // nach unten links
 			System.out.println("unten links, " + alpha);
-			toTurn1 = (alpha+180) - fromAngle;
-			toTurn2 = toAngle - (alpha+180) ;
+			toTurn1 = (alpha + 180) - fromAngle;
+			toTurn2 = toAngle - (alpha + 180);
 			System.out.println(toTurn1 + " " + toTurn2);
-		}
-		else if (fromX < toX && fromY > toY) { // nach unten rechts
+		} else if (fromX < toX && fromY > toY) { // nach unten rechts
 			System.out.println("unten rechts , " + alpha);
-			toTurn1 = (beta+270) - fromAngle;
-			toTurn2 = toAngle - (beta+270) ;
+			toTurn1 = (beta + 270) - fromAngle;
+			toTurn2 = toAngle - (beta + 270);
 			System.out.println(toTurn1 + " " + toTurn2);
 		}
 
 		turn(toTurn1);
-		drive(c);		
+		drive(c);
 		turn(toTurn2);
-		
-		System.out.println("-----------------------------------------------------------------------");
+
+		System.out
+				.println("-----------------------------------------------------------------------");
 	}
 
-	public static void turn(double degree){
-		if(degree>180){
-			turn('r',Math.abs(360-degree));
-		}
-		else if(degree<-180){
-			turn('l',Math.abs(360+degree));
-		}
-		else if(degree<0){
+	public static void turn(double degree) {
+		if (degree > 180) {
+			turn('r', Math.abs(360 - degree));
+		} else if (degree < -180) {
+			turn('l', Math.abs(360 + degree));
+		} else if (degree < 0) {
 			turn('r', Math.abs(degree));
-		}
-		else{
+		} else {
 			turn('l', Math.abs(degree));
 		}
 	}

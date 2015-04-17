@@ -38,6 +38,7 @@ public class Read implements Runnable {
 						MainActivity
 								.comReadWrite(new byte[] { 's', '\r', '\n' });
 						MainActivity.setStop(true);
+						MainActivity.stopStoptime(MainActivity.stopwatch);
 					}
 
 					Thread.sleep(100);
