@@ -4,17 +4,11 @@ import android.widget.TextView;
 
 public class Read implements Runnable {
 
-	private Controller controller;
-
-	public Read(Controller controller) {
-		this.controller = controller;
-	}
-
 	@Override
 	public void run() {
 		while (true) {
 			try {
-				if (!controller.isStopped()) {
+				if (!MainActivity.isStopped()) {
 					String string1;
 					do {
 						string1 = MainActivity.comReadWrite(new byte[] { 'q',
@@ -43,7 +37,7 @@ public class Read implements Runnable {
 					if (mitte <= 25 || rechts <= 15 || links <= 15) {
 						MainActivity
 								.comReadWrite(new byte[] { 's', '\r', '\n' });
-						controller.setStop(true);
+						MainActivity.setStop(true);
 					}
 
 					Thread.sleep(100);

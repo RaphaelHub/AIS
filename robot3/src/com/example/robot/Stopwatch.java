@@ -2,11 +2,15 @@ package com.example.robot;
 
 public class Stopwatch { 
 
-    private final long start;
+    private /*final*/ long start;
 
     public Stopwatch() {
-        start = System.currentTimeMillis();
+//        start = System.currentTimeMillis();
     } 
+    public void start(){
+    	start = System.currentTimeMillis();
+    }
+    
 
     public double elapsedTime() {
         long now = System.currentTimeMillis();
