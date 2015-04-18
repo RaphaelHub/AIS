@@ -35,9 +35,9 @@ public class MainActivity extends Activity {
 	public static double y_now = 0;
 	public static double theta_now = 0;
 
-	public static boolean stopped;
-	public static Stopwatch stopwatch;
-	public static double stoptime=0;
+	public static boolean stopped = false;
+	public static Stopwatch stopwatch = new Stopwatch();
+	public static double stoptime = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -128,14 +128,38 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				setUp();
-//				drive(20);
-//				drive(10);
-//				drive(30);
-				// driveFromTo(x_now,y_now,theta_now, 50, 50, 90);
-				// driveFromTo(x_now,y_now,theta_now, 50, 0, -90);
-				// driveFromTo(x_now,y_now,theta_now, -50, 50, 270);
-				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+				// MainActivity.drive(25);
+				// MainActivity.turn(45);
+
+//				driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
+//				driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
+//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
+//				driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
+//				driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
+//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
+//				driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
+//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				
 			}
 		});
 	}
@@ -235,7 +259,7 @@ public class MainActivity extends Activity {
 	}
 
 	public static void stopStoptime(Stopwatch stoptime1) {
-		stoptime=stopwatch.elapsedTime();
+		stoptime = stopwatch.elapsedTime();
 	}
 
 	// ***************************** END BASIC FUNCTIONS
@@ -244,6 +268,9 @@ public class MainActivity extends Activity {
 	// *************************************
 
 	public static void setUp() {
+		x_now = 0;
+		y_now = 0;
+		theta_now = 0;
 		Drive driveThread = new Drive();
 		Read stopThread = new Read();
 		Thread t1 = new Thread(driveThread);
@@ -251,35 +278,44 @@ public class MainActivity extends Activity {
 		t1.start();
 		t2.start();
 	}
-	public static void printPosition(){
+
+	public static void printPosition() {
 		System.out.println("Positon: X: " + x_now + "  Y: " + y_now
 				+ "  Theta: " + theta_now);
 	}
 
-	public static void drive(double cm) {
+	public static void drive(double cm, boolean forced) {
+		System.out.println("b4: Driven, Positon: X: " + x_now + "  Y: " + y_now
+				+ "  Theta: " + theta_now);
 		try {
-			robotSetVelocity(velocity, velocity);
-			stopwatch = new Stopwatch();
+			comReadWrite(new byte[] { 'w', '\r', '\n' });
 			stopwatch.start();
-			int sleeptime = (int) (cm * 1000 / 19.35);
+			int sleeptime = (int) (cm * 1000 / 28.85);
+			
+			while(sleeptime>500 && !stopped){
+				Thread.sleep(500);
+				sleeptime-=500;
+			}
 			Thread.sleep(sleeptime);
-			comWrite(new byte[] { 's', '\r', '\n' });
-		//	System.out.println("stoptime: " + );
-			if(!stopped){
+			
+			
+			comWrite(new byte[] { 's', '\r', '\n' });			
+			// System.out.println("stoptime: " + );
+			if (!stopped || forced) {
 				double dX = cm * Math.cos(Math.toRadians(theta_now));
 				double dY = cm * Math.sin(Math.toRadians(theta_now));
 				x_now += Math.round(dX);
 				y_now += Math.round(dY);
-			}
-			else{
+				System.out.println("if drive");
+			} else {
 				System.out.println(stoptime);
-				double drivencm = stoptime * 19.35;
+				double drivencm = stoptime * 28.85;
 				double dX = drivencm * Math.cos(Math.toRadians(theta_now));
 				double dY = drivencm * Math.sin(Math.toRadians(theta_now));
 				x_now += Math.round(dX);
 				y_now += Math.round(dY);
+				System.out.println("else drive");
 			}
-			stoptime=0;
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -324,32 +360,37 @@ public class MainActivity extends Activity {
 
 	public static boolean ReadSensorsMain() {
 		String string1;
-		do {
-			string1 = MainActivity.comReadWrite(new byte[] { 'q', '\r', '\n' });
-			string1 = string1.replaceAll("\\p{C}", "");
-			string1 = string1.replaceAll("command", "");
-			string1 = string1.replaceAll("execution", "");
-			string1 = string1.replaceAll("ecution", "");
-			string1 = string1.replaceAll("marked", "");
-			string1 = string1.replaceAll("sensor", "");
-			string1 = string1.replaceAll(":", "");
-			string1 = string1.replaceAll(" ", "");
-		} while (string1.length() == 0);
+		try {
+			do {
+				string1 = MainActivity.comReadWrite(new byte[] { 'q', '\r',
+						'\n' });
+				string1 = string1.replaceAll("\\p{C}", "");
+				string1 = string1.replaceAll("command", "");
+				string1 = string1.replaceAll("execution", "");
+				string1 = string1.replaceAll("ecution", "");
+				string1 = string1.replaceAll("marked", "");
+				string1 = string1.replaceAll("sensor", "");
+				string1 = string1.replaceAll(":", "");
+				string1 = string1.replaceAll(" ", "");
+			} while (string1.length() == 0);
 
-		String[] arr = string1.split("0x");
-		int[] sensor = new int[arr.length];
+			String[] arr = string1.split("0x");
+			int[] sensor = new int[arr.length];
 
-		for (int i = 1; i < arr.length; i++) {
-			sensor[i - 1] = Integer.parseInt(arr[i], 16);
-		}
+			for (int i = 1; i < arr.length; i++) {
+				sensor[i - 1] = Integer.parseInt(arr[i], 16);
+			}
 
-		int mitte = sensor[6];
-		int links = sensor[2];
-		int rechts = sensor[3];
+			int mitte = sensor[6];
+			int links = sensor[2];
+			int rechts = sensor[3];
 
-		if (mitte <= 25 || rechts <= 20 || links <= 18) {
-			System.out.println(mitte + " " + links + " " + rechts);
-			return true;
+			if (mitte <= 30 || rechts <= 20 || links <= 20) {
+				System.out.println(mitte + " " + links + " " + rechts);
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println(e);
 		}
 
 		return false;
@@ -413,8 +454,11 @@ public class MainActivity extends Activity {
 		}
 
 		turn(toTurn1);
-		drive(c);
-		turn(toTurn2);
+		drive(c, false);
+
+		if (!isStopped()) {
+			turn(toTurn2);
+		}
 
 		System.out
 				.println("-----------------------------------------------------------------------");

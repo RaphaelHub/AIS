@@ -21,7 +21,7 @@ public class Read implements Runnable {
 						string1 = string1.replaceAll("sensor", "");
 						string1 = string1.replaceAll(":", "");
 						string1 = string1.replaceAll(" ", "");
-					} while (string1.length() == 0);
+					} while (string1.length() == 0 && string1.contains("0x"));
 
 					String[] arr = string1.split("0x");
 					int[] sensor = new int[arr.length];
@@ -34,7 +34,11 @@ public class Read implements Runnable {
 					int links = sensor[2];
 					int rechts = sensor[3];
 
-					if (mitte <= 25 || rechts <= 15 || links <= 15) {
+					if (mitte <= 30 || rechts <= 20 /*|| links <= 20*/) {
+						for (int i : sensor) {
+							System.out.print(i + " ");
+						}
+						System.out.println();
 						MainActivity
 								.comReadWrite(new byte[] { 's', '\r', '\n' });
 						MainActivity.setStop(true);
@@ -42,12 +46,14 @@ public class Read implements Runnable {
 					}
 
 					Thread.sleep(100);
+					//System.out.println("success");
 				}
 				else{
 					Thread.sleep(100);
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				//e.printStackTrace();
+				System.out.println(e);
 			}
 		}
 	}
