@@ -53,7 +53,7 @@ public class Read implements Runnable {
 				}
 			} catch (Exception e) {
 				//e.printStackTrace();
-				System.out.println(e);
+				//System.out.println(e);
 			}
 		}
 	}

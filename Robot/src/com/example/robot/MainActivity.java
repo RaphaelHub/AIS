@@ -146,20 +146,33 @@ public class MainActivity extends Activity {
 				// MainActivity.drive(25);
 				// MainActivity.turn(45);
 
-//				driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
-//				driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
-//				driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
-//				driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
-//				driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
-//				driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				
+				// driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
+				// driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
+				// driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
+				// driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
+				// driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
+				// driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
+				// driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
+				// driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
+				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+
 			}
 		});
 	}
@@ -271,12 +284,28 @@ public class MainActivity extends Activity {
 		x_now = 0;
 		y_now = 0;
 		theta_now = 0;
-		Drive driveThread = new Drive();
+
 		Read stopThread = new Read();
-		Thread t1 = new Thread(driveThread);
 		Thread t2 = new Thread(stopThread);
-		t1.start();
 		t2.start();
+		while (!(MainActivity.x_now == 200 && MainActivity.y_now == 0 && MainActivity.theta_now == 0)) {
+			if (!MainActivity.isStopped()) {
+				System.out.println("in drive if, Positon: X: " + x_now + "  Y: " + y_now
+						+ "  Theta: " + theta_now);
+				MainActivity.driveFromTo(MainActivity.x_now,
+						MainActivity.y_now, MainActivity.theta_now, 200, 0, 0);
+				// MainActivity.drive(200);
+			} else {
+				do {
+					MainActivity.turn(90);
+					MainActivity.drive(20, true);
+					MainActivity.turn(-90);
+				} while (MainActivity.ReadSensorsMain());
+				MainActivity.setStop(false);
+			}
+		}
+		System.out.println(MainActivity.x_now + " " + MainActivity.y_now + " "
+				+ MainActivity.theta_now);
 	}
 
 	public static void printPosition() {
@@ -291,15 +320,16 @@ public class MainActivity extends Activity {
 			comReadWrite(new byte[] { 'w', '\r', '\n' });
 			stopwatch.start();
 			int sleeptime = (int) (cm * 1000 / 28.85);
-			
-			while(sleeptime>500 && !stopped){
+
+			while (sleeptime > 500 && (!stopped || forced)) {
 				Thread.sleep(500);
-				sleeptime-=500;
+				sleeptime -= 500;
 			}
-			Thread.sleep(sleeptime);
-			
-			
-			comWrite(new byte[] { 's', '\r', '\n' });			
+			if (!stopped || forced) {
+				Thread.sleep(sleeptime);
+			}
+
+			comWrite(new byte[] { 's', '\r', '\n' });
 			// System.out.println("stoptime: " + );
 			if (!stopped || forced) {
 				double dX = cm * Math.cos(Math.toRadians(theta_now));
