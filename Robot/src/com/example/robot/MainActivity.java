@@ -196,10 +196,7 @@ public class MainActivity extends Activity {
 		});
 	}
 	
-	public void changeToDrive(View view){
-		Intent myintent = new Intent(MainActivity.this, secondactivity.class);
-		MainActivity.this.startActivity(myintent);
-	}
+
 
 	// ***************************** END BUTTONS
 	// **********************************************
