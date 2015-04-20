@@ -8,6 +8,7 @@ public class Read implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				Thread.sleep(500);
 				if (!MainActivity.isStopped()) {
 					String string1;
 					do {
@@ -30,11 +31,11 @@ public class Read implements Runnable {
 						sensor[i - 1] = Integer.parseInt(arr[i], 16);
 					}
 
-					int mitte = sensor[6];
-					int links = sensor[2];
-					int rechts = sensor[3];
+					//int mitte = sensor[6];
+					int links = sensor[5];
+					int rechts = sensor[6];
 
-					if (mitte <= 30 || rechts <= 20 /*|| links <= 20*/) {
+					if ((rechts <= 50 || links <= 20) && (rechts >= 35 || links >= 5)) {
 						for (int i : sensor) {
 							System.out.print(i + " ");
 						}
@@ -45,7 +46,7 @@ public class Read implements Runnable {
 						MainActivity.stopStoptime(MainActivity.stopwatch);
 					}
 
-					Thread.sleep(100);
+					Thread.sleep(500);
 					//System.out.println("success");
 				}
 				else{

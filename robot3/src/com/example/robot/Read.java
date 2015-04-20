@@ -8,6 +8,7 @@ public class Read implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				Thread.sleep(500);
 				if (!MainActivity.isStopped()) {
 					String string1;
 					do {
@@ -21,7 +22,7 @@ public class Read implements Runnable {
 						string1 = string1.replaceAll("sensor", "");
 						string1 = string1.replaceAll(":", "");
 						string1 = string1.replaceAll(" ", "");
-					} while (string1.length() == 0);
+					} while (string1.length() == 0 && string1.contains("0x"));
 
 					String[] arr = string1.split("0x");
 					int[] sensor = new int[arr.length];
@@ -30,24 +31,30 @@ public class Read implements Runnable {
 						sensor[i - 1] = Integer.parseInt(arr[i], 16);
 					}
 
-					int mitte = sensor[6];
-					int links = sensor[2];
-					int rechts = sensor[3];
+					//int mitte = sensor[6];
+					int links = sensor[5];
+					int rechts = sensor[6];
 
-					if (mitte <= 25 || rechts <= 15 || links <= 15) {
+					if ((rechts <= 50 || links <= 20) && (rechts >= 35 || links >= 5)) {
+						for (int i : sensor) {
+							System.out.print(i + " ");
+						}
+						System.out.println();
 						MainActivity
 								.comReadWrite(new byte[] { 's', '\r', '\n' });
 						MainActivity.setStop(true);
 						MainActivity.stopStoptime(MainActivity.stopwatch);
 					}
 
-					Thread.sleep(100);
+					Thread.sleep(500);
+					//System.out.println("success");
 				}
 				else{
 					Thread.sleep(100);
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			} catch (Exception e) {
+				//e.printStackTrace();
+				//System.out.println(e);
 			}
 		}
 	}
