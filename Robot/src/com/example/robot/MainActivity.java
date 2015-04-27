@@ -136,61 +136,21 @@ public class MainActivity extends Activity {
 		trys.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				setUp();
-				//ReadSensorsMain();
-				
-//				robotSetVelocity(velocity, neg_velocity);
-//				try {
-//					Thread.sleep(1000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				String x = comReadWrite(new byte[] { 's', '\r', '\n' });
-				//drive(100, false);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
-				// MainActivity.drive(25);
-				// MainActivity.turn(45);
+				//setUp();
 
-				// driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
-				// driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
-				// driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
-				// driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
-				// driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
-				// driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
-				// driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
-				// driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
-				// driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 35, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 50, 50, 40);
+				 driveFromTo(x_now,y_now,theta_now, 80, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 0, -50, 0);
+				 driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, -50, 10, 10);
+				 driveFromTo(x_now,y_now,theta_now, 50, 50, -30);
+				 driveFromTo(x_now,y_now,theta_now, -25, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 40, -50, 0);
+				 driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 1, 0, 0);
+				 driveFromTo(x_now,y_now,theta_now, 1, 5, 0);
+				 driveFromTo(x_now,y_now,theta_now, 0, 0, 0);
 
 			}
 		});
@@ -365,7 +325,7 @@ public class MainActivity extends Activity {
 				System.out.println("if drive");
 			} else {
 				System.out.println(stoptime);
-				double drivencm = stoptime * 28.85;
+				double drivencm = stoptime * 28.7;
 				double dX = drivencm * Math.cos(Math.toRadians(theta_now));
 				double dY = drivencm * Math.sin(Math.toRadians(theta_now));
 				x_now += Math.round(dX);

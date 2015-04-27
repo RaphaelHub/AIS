@@ -6,10 +6,10 @@ public class Read implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!(MainActivity.x_now == 130 && MainActivity.y_now == 250 && MainActivity.theta_now == 0)) {
 			try {
 				if (!MainActivity.isStopped()) {
-					Thread.sleep(350);
+					Thread.sleep(400);
 					String string1;
 					do {
 						string1 = MainActivity.comReadWrite(new byte[] { 'q',
