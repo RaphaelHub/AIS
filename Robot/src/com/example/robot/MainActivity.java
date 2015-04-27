@@ -313,17 +313,17 @@ public class MainActivity extends Activity {
 		Read stopThread = new Read();
 		Thread t2 = new Thread(stopThread);
 		t2.start();
-		while (!(MainActivity.x_now == 200 && MainActivity.y_now == 0 && MainActivity.theta_now == 0)) {
+		while (!(MainActivity.x_now == 130 && MainActivity.y_now == 250 && MainActivity.theta_now == 0)) {
 			if (!MainActivity.isStopped()) {
 				System.out.println("in drive if, Positon: X: " + x_now + "  Y: " + y_now
 						+ "  Theta: " + theta_now);
 				MainActivity.driveFromTo(MainActivity.x_now,
-						MainActivity.y_now, MainActivity.theta_now, 200, 0, 0);
+						MainActivity.y_now, MainActivity.theta_now, 130, 250, 0);
 			} else {
 				do {
-					MainActivity.turn(90);
-					MainActivity.drive(20, true);
 					MainActivity.turn(-90);
+					MainActivity.drive(20, true);
+					MainActivity.turn(90);
 				} while (MainActivity.ReadSensorsMain());
 				MainActivity.setStop(false);
 			}
@@ -446,7 +446,7 @@ public class MainActivity extends Activity {
 			int links = sensor[5];
 			int rechts = sensor[6];
 
-			if (rechts <= 40 || links <= 10) {
+			if (rechts <= 50 || links <= 30) {
 				System.out.println(" " + links + " " + rechts);
 				return true;
 			}

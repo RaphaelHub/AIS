@@ -8,8 +8,8 @@ public class Read implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(500);
 				if (!MainActivity.isStopped()) {
+					Thread.sleep(350);
 					String string1;
 					do {
 						string1 = MainActivity.comReadWrite(new byte[] { 'q',
@@ -35,7 +35,7 @@ public class Read implements Runnable {
 					int links = sensor[5];
 					int rechts = sensor[6];
 
-					if ((rechts <= 50 || links <= 20) && (rechts >= 35 || links >= 5)) {
+					if ((rechts <= 50 || links <= 30)/* && (rechts >= 35 || links >= 5)*/) {
 						for (int i : sensor) {
 							System.out.print(i + " ");
 						}
