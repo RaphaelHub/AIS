@@ -2,6 +2,7 @@ package com.example.robot;
 
 import java.util.concurrent.TimeUnit;
 
+import org.opencv.core.Point;
 import jp.ksksue.driver.serial.FTDriver;
 import android.app.Activity;
 import android.content.Intent;
@@ -92,7 +93,15 @@ public class MainActivity extends Activity {
 		buttonX.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
-				comWrite(new byte[] { 'x', '\r', '\n' });
+				BallFinder finder = new BallFinder(1);
+				finder.run();
+				while(true) {
+					
+					Point point = finder.getPoint();
+					if(point.x != 0) {
+						System.out.println("found");
+					}
+				}
 			}
 		});
 

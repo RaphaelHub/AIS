@@ -51,7 +51,7 @@ containing a value of this type.
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f09000e;
+        public static final int action_settings=0x7f09000f;
         public static final int any=0x7f090000;
         public static final int back=0x7f090001;
         public static final int button1=0x7f090003;
@@ -64,12 +64,14 @@ containing a value of this type.
         public static final int button7=0x7f090009;
         public static final int button8=0x7f09000a;
         public static final int button9=0x7f09000b;
+        public static final int color_blob_detection_activity_surface_view=0x7f09000e;
         public static final int front=0x7f090002;
         public static final int textView1=0x7f09000c;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int main=0x7f030001;
+        public static final int color_blob_detection_surface_view=0x7f030001;
+        public static final int main=0x7f030002;
     }
     public static final class menu {
         public static final int main=0x7f080000;
