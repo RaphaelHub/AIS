@@ -180,7 +180,7 @@ public class robotMove implements Runnable {
 						ColorBlobDetectionActivity.velocity);
 				ColorBlobDetectionActivity.theta_now += d;
 			}
-			int time = (int) (d * 1000 / (123));
+			int time = (int) (d * 1000 / (121.85));
 			System.out.println(time);
 			Thread.sleep(time);
 			ColorBlobDetectionActivity.comWrite(new byte[] { 's', '\r', '\n' });
