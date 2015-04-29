@@ -6,12 +6,12 @@ public class robotMove implements Runnable {
 
 	@Override
 	public void run() {
-		turnTracking(360);
-		turnTracking(360);
-		turnTracking(360);
-		turnTracking(360);
-		turnTracking(360);
-		//ballFinder();
+//		turnTracking(360);
+//		turnTracking(-360);
+//		turnTracking(360);
+//		turnTracking(-360);
+//		turnTracking(360);
+		ballFinder();
 	}
 
 	public void ballFinder() {
@@ -38,7 +38,7 @@ public class robotMove implements Runnable {
 				Thread.sleep(sleepTime);
 			}
 			if (seeBall()) {
-				turnTracking(360);
+				turnTracking(-360);
 				Thread.sleep(sleepTime);
 			}
 			if (seeBall()) {
@@ -54,7 +54,7 @@ public class robotMove implements Runnable {
 				}
 
 				if (seeBall()) {
-					turnTracking(360);
+					turnTracking(-360);
 					Thread.sleep(sleepTime);
 				}
 
@@ -87,10 +87,18 @@ public class robotMove implements Runnable {
 
 	private void turnTracking(double toTurn) {
 		System.out.println("Color: turn");
-		while (toTurn >= 45
+		double temp = 1;
+		while (Math.abs(toTurn) >= 45
 				&& (seeBall())) {
-			toTurn -= 45;
-			turn(45);
+
+			if (toTurn < 0) {
+				toTurn += 45;
+				temp = -1;
+			} else {
+				toTurn -= 45;
+				temp = 1;
+			}
+			turn(temp*45);
 			System.out.println("Color: " + toTurn);
 			try {
 				Thread.sleep(800);
@@ -98,9 +106,11 @@ public class robotMove implements Runnable {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
+	
 	}
+
+
 
 	public static void drive(double cm, boolean forced) {
 		System.out.println("b4: Driven, Positon: X: "
@@ -180,7 +190,7 @@ public class robotMove implements Runnable {
 						ColorBlobDetectionActivity.velocity);
 				ColorBlobDetectionActivity.theta_now += d;
 			}
-			int time = (int) (d * 1000 / (121.85));
+			int time = (int) (d * 1000 / (120.0));
 			System.out.println(time);
 			Thread.sleep(time);
 			ColorBlobDetectionActivity.comWrite(new byte[] { 's', '\r', '\n' });
