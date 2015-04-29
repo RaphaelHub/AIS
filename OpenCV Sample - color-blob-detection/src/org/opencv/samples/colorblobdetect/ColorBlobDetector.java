@@ -8,6 +8,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
@@ -21,6 +22,7 @@ public class ColorBlobDetector {
     private Scalar mColorRadius = new Scalar(25,50,50,0);
     private Mat mSpectrum = new Mat();
     private List<MatOfPoint> mContours = new ArrayList<MatOfPoint>();
+    private Point coordinates = new Point();
 
     // Cache
     Mat mPyrDownMat = new Mat();
@@ -95,16 +97,34 @@ public class ColorBlobDetector {
         each = contours.iterator();
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
-            System.out.println("Touch" + contour.toArray()[0]);
             if (Imgproc.contourArea(contour) > mMinContourArea*maxArea) {
             	
                 Core.multiply(contour, new Scalar(4,4), contour);
                 mContours.add(contour);
             }
+            Point [] temp = contour.toArray(); 
+            double max = temp[0].y;
+            int pos = 0;
+            for (int i = 0; i <= temp.length-1; i++) {
+            	if(temp[i].y > max) {
+            		max = temp[i].y;
+            		pos = i;
+            	}
+			}
+            	coordinates = temp[pos];
+           
         }
     }
+    
+    public Point getCoordinates() {
+    	return coordinates;
+    }
 
-    public List<MatOfPoint> getContours() {
+    public void resetCoordinates() {
+		this.coordinates = null;
+	}
+
+	public List<MatOfPoint> getContours() {
         return mContours;
     }
 }

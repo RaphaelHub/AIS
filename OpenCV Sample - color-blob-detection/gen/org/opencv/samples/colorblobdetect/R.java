@@ -37,19 +37,32 @@ containing a value of this type.
         public static final int show_fps=0x7f010000;
     }
     public static final class drawable {
-        public static final int icon=0x7f020000;
+        public static final int ic_launcher=0x7f020000;
+        public static final int icon=0x7f020001;
     }
     public static final class id {
-        public static final int any=0x7f050000;
-        public static final int back=0x7f050001;
-        public static final int color_blob_detection_activity_surface_view=0x7f050003;
-        public static final int front=0x7f050002;
+        public static final int any=0x7f070000;
+        public static final int back=0x7f070001;
+        public static final int color_blob_detection_activity_surface_view=0x7f070003;
+        public static final int disconnect=0x7f070004;
+        public static final int front=0x7f070002;
+        public static final int green=0x7f070006;
+        public static final int red=0x7f070005;
+        public static final int yellow=0x7f070007;
     }
     public static final class layout {
         public static final int color_blob_detection_surface_view=0x7f030000;
+        public static final int main=0x7f030001;
+    }
+    public static final class menu {
+        public static final int main=0x7f060000;
     }
     public static final class string {
-        public static final int app_name=0x7f040000;
+        public static final int app_name=0x7f050001;
+        public static final int hello=0x7f050000;
+    }
+    public static final class xml {
+        public static final int device_filter=0x7f040000;
     }
     public static final class styleable {
         /** Attributes that can be used with a CameraBridgeViewBase.

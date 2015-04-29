@@ -1,35 +1,35 @@
 package org.opencv.samples.colorblobdetect;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import jp.ksksue.driver.serial.FTDriver;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Rect;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.imgproc.Imgproc;
 
+import android.view.Menu;
 import android.app.Activity;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
+import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnTouchListener;
 
 public class ColorBlobDetectionActivity extends Activity implements
-		OnTouchListener, CvCameraViewListener2 {
-	private static final String TAG = "OCVSample::Activity";
+		CvCameraViewListener2 {
+	private static final String TAG = "Ball finder::Activity";
 
 	private boolean mIsColorSelected = false;
 	private Mat mRgba;
@@ -40,6 +40,19 @@ public class ColorBlobDetectionActivity extends Activity implements
 	private Size SPECTRUM_SIZE;
 	private Scalar CONTOUR_COLOR;
 
+	private static FTDriver com;
+	public static Tracker tracker;
+
+	public static byte velocity = 20;
+	public static byte neg_velocity = -20;
+	public static double x_now = 0;
+	public static double y_now = 0;
+	public static double theta_now = 0;
+
+	public static boolean stopped = false;
+	public static Stopwatch stopwatch = new Stopwatch();
+	public static double stoptime = 0;
+
 	private CameraBridgeViewBase mOpenCvCameraView;
 
 	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
@@ -49,8 +62,6 @@ public class ColorBlobDetectionActivity extends Activity implements
 			case LoaderCallbackInterface.SUCCESS: {
 				Log.i(TAG, "OpenCV loaded successfully");
 				mOpenCvCameraView.enableView();
-				mOpenCvCameraView
-						.setOnTouchListener(ColorBlobDetectionActivity.this);
 			}
 				break;
 			default: {
@@ -70,6 +81,9 @@ public class ColorBlobDetectionActivity extends Activity implements
 	public void onCreate(Bundle savedInstanceState) {
 		Log.i(TAG, "called onCreate");
 		super.onCreate(savedInstanceState);
+
+		com = new FTDriver((UsbManager) getSystemService(USB_SERVICE));
+		com.begin(9600);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -77,6 +91,46 @@ public class ColorBlobDetectionActivity extends Activity implements
 
 		mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.color_blob_detection_activity_surface_view);
 		mOpenCvCameraView.setCvCameraViewListener(this);
+
+		tracker = new Tracker();
+		Thread t = new Thread(tracker);
+		t.start();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.disconnect:
+			System.out.println("disconnected");
+			disconnect();
+			return true;
+		case R.id.red:
+			mBlobColorHsv = new Scalar(252, 198, 181, 0);
+			System.out.println("Color: red");
+			break;
+		case R.id.green:
+			mBlobColorHsv = new Scalar(103, 255, 93, 0);
+			System.out.println("Color: green");
+			break;
+		case R.id.yellow:
+			mBlobColorHsv = new Scalar(39, 255, 207, 0);
+			System.out.println("Color: yellow");
+			break;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
+		beginTracking();
+		robotMove move = new robotMove();
+		Thread t2 = new Thread(move);
+		t2.start();
+		return true;
 	}
 
 	@Override
@@ -113,107 +167,18 @@ public class ColorBlobDetectionActivity extends Activity implements
 		mRgba.release();
 	}
 
-	public boolean onTouch(View v, MotionEvent event) {
+	public boolean beginTracking() {
 
-		int cols = mRgba.cols();
-		int rows = mRgba.rows();
-
-		int xOffset = (mOpenCvCameraView.getWidth() - cols) / 2;
-		int yOffset = (mOpenCvCameraView.getHeight() - rows) / 2;
-
-		int x = (int) event.getX() - xOffset;
-		int y = (int) event.getY() - yOffset;
-
-		Log.i(TAG, "Touch image coordinates: (" + x + ", " + y + ")");
-
-		if ((x < 0) || (y < 0) || (x > cols) || (y > rows))
-			return false;
-
-		Rect touchedRect = new Rect();
-
-		touchedRect.x = (x > 4) ? x - 4 : 0;
-		touchedRect.y = (y > 4) ? y - 4 : 0;
-
-		touchedRect.width = (x + 4 < cols) ? x + 4 - touchedRect.x : cols
-				- touchedRect.x;
-		touchedRect.height = (y + 4 < rows) ? y + 4 - touchedRect.y : rows
-				- touchedRect.y;
-
-		Mat touchedRegionRgba = mRgba.submat(touchedRect);
-
-		Mat touchedRegionHsv = new Mat();
-		Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv,
-				Imgproc.COLOR_RGB2HSV_FULL);
-
-		// Calculate average color of touched region
-		mBlobColorHsv = Core.sumElems(touchedRegionHsv);
-		int pointCount = touchedRect.width * touchedRect.height;
-		for (int i = 0; i < mBlobColorHsv.val.length; i++)
-			mBlobColorHsv.val[i] /= pointCount;
-
-		
-
-		mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
-
-		Log.i(TAG, "Touched rgba color: (" + mBlobColorHsv.val[0] + ", "
-				+ mBlobColorHsv.val[1] + ", " + mBlobColorHsv.val[2] + ", "
-				+ mBlobColorHsv.val[3] + ")");
-
-		//Red 2.875 215.5 162.828125 0.0
-		mBlobColorHsv = new Scalar(2.875, 215.5, 162.828125, 0.0);
 		mDetector.setHsvColor(mBlobColorHsv);
-		Log.i(TAG, "Touch spectrum: (" + mDetector.getSpectrum() + ")");
-
 
 		Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
+		tracker.setDetector(mDetector);
+
 		mIsColorSelected = true;
 
-		touchedRegionRgba.release();
-		touchedRegionHsv.release();
-
-		int maxX = 1923;
-		int maxY = 1083;
-		int counter = 50;
-		//Scalar[][] color = new Scalar [maxX/counter][maxX/counter];
-		ArrayList<ArrayList<Scalar>> colorList = new ArrayList<ArrayList<Scalar>>();
-	/*	for (int i = 0; i < maxX-counter; i += counter) {
-			ArrayList<Scalar> temp = new ArrayList<Scalar>();
-			for (int j = 0; j < maxY-counter; j += counter) {
-				
-				y = j;
-				x = i;
-
-				touchedRect.x = (x > 4) ? x - 4 : 0;
-				touchedRect.y = (y > 4) ? y - 4 : 0;
-
-				touchedRect.width = (x + 4 < cols) ? x + 4 - touchedRect.x
-						: cols - touchedRect.x;
-				touchedRect.height = (y + 4 < rows) ? y + 4 - touchedRect.y
-						: rows - touchedRect.y;
-
-				touchedRegionRgba = mRgba.submat(touchedRect);
-
-				touchedRegionHsv = new Mat();
-				Imgproc.cvtColor(touchedRegionRgba, touchedRegionHsv,
-						Imgproc.COLOR_RGB2HSV_FULL);
-
-				// Calculate average color of touched region
-				mBlobColorHsv = Core.sumElems(touchedRegionHsv);
-				pointCount = touchedRect.width * touchedRect.height;
-				for (int k = 0; k < mBlobColorHsv.val.length; k++)
-					mBlobColorHsv.val[k] /= pointCount;
-
-				mBlobColorRgba = converScalarHsv2Rgba(mBlobColorHsv);
-				temp.add(mBlobColorHsv);
-			
-				Log.i(TAG, "Touched Test: (" + mBlobColorRgba.val[0] + ", "
-						+ mBlobColorRgba.val[1] + ", " + mBlobColorRgba.val[2]
-						+ ", " + mBlobColorRgba.val[3] + ", " + i + ")");
-
-			}
-			colorList.add(temp);
-		}*/
+		// oberster punkte y = 1, unterster y = 178 -> mitte 119
+		// rechts x = 238; links x = 1 ->
 
 		return false; // don't need subsequent touch events
 	}
@@ -238,12 +203,161 @@ public class ColorBlobDetectionActivity extends Activity implements
 		return mRgba;
 	}
 
-	private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
-		Mat pointMatRgba = new Mat();
-		Mat pointMatHsv = new Mat(1, 1, CvType.CV_8UC3, hsvColor);
-		Imgproc.cvtColor(pointMatHsv, pointMatRgba, Imgproc.COLOR_HSV2RGB_FULL,
-				4);
-
-		return new Scalar(pointMatRgba.get(0, 0));
+	public static void comWrite(byte[] data) {
+		// System.out.println("comwrite");
+		if (com.isConnected()) {
+			com.write(data);
+		} else {
+			System.out.println("not connected\n");
+		}
 	}
+
+	public static String comRead() {
+		String s = "";
+		int i = 0;
+		int n = 0;
+		while (i < 3 || n > 0) {
+			byte[] buffer = new byte[256];
+			n = com.read(buffer);
+			s += new String(buffer, 0, n);
+			i++;
+		}
+		return s;
+	}
+
+	public static String comReadWrite(byte[] data) {
+		// System.out.println("comreadwrite " + (char)data[0]);
+
+		com.write(data);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) { // ignore
+		}
+		return comRead();
+	}
+
+	public static void robotSetVelocity(byte left, byte right) {
+		comReadWrite(new byte[] { 'i', left, right, '\r', '\n' });
+	}
+
+	public void robotSetLeds(byte red, byte blue) {
+		comReadWrite(new byte[] { 'u', red, blue, '\r', '\n' });
+	}
+
+	public void robotSetBar(byte value) {
+		comReadWrite(new byte[] { 'o', value, '\r', '\n' });
+	}
+
+	public static void robotDrive(byte distance_cm) {
+		comReadWrite(new byte[] { 'k', distance_cm, '\r', '\n' });
+	}
+
+	public static void robotTurn(byte degree) {
+		comReadWrite(new byte[] { 'l', degree, '\r', '\n' });
+	}
+
+	public void disconnect() {
+		com.end();
+		if (!com.isConnected()) {
+			System.out.println("disconnected");
+		}
+
+	}
+
+	public static boolean isStopped() {
+		return stopped;
+	}
+
+	public static void setStop(boolean bool) {
+		stopped = bool;
+	}
+
+	public static double getStopime() {
+		return stoptime;
+	}
+
+	public static void stopStoptime(Stopwatch stoptime1) {
+		stoptime = stopwatch.elapsedTime();
+	}
+
+	// ***************************** END BASIC FUNCTIONS
+	// *************************************
+	// ***************************** START SPECIFIC FUNCTIONS
+	// *************************************
+
+	public static void setUp() {
+//		x_now = 0;
+//		y_now = 0;
+//		theta_now = 0;
+//		stopped = false;
+//
+//		Read stopThread = new Read();
+//		Thread t2 = new Thread(stopThread);
+//		t2.start();
+//		while (!(x_now == 130 && y_now == 250 && theta_now == 0)) {
+//			if (!isStopped()) {
+//				System.out.println("in drive if, Positon: X: " + x_now
+//						+ "  Y: " + y_now + "  Theta: " + theta_now);
+//				driveFromTo(x_now, y_now, theta_now, 130, 250, 0);
+//			} else {
+//				do {
+//					turn(-90);
+//					drive(20, true);
+//					turn(90);
+//				} while (ReadSensorsMain());
+//				setStop(false);
+//			}
+//		}
+//		System.out.println(x_now + " " + y_now + " " + theta_now);
+	}
+
+
+	public static void printPosition() {
+		System.out.println("Positon: X: " + x_now + "  Y: " + y_now
+				+ "  Theta: " + theta_now);
+	}
+
+
+
+	public static boolean ReadSensorsMain() {
+		String string1;
+		try {
+			do {
+				string1 = comReadWrite(new byte[] { 'q', '\r', '\n' });
+				string1 = string1.replaceAll("\\p{C}", "");
+				string1 = string1.replaceAll("command", "");
+				string1 = string1.replaceAll("execution", "");
+				string1 = string1.replaceAll("ecution", "");
+				string1 = string1.replaceAll("marked", "");
+				string1 = string1.replaceAll("sensor", "");
+				string1 = string1.replaceAll(":", "");
+				string1 = string1.replaceAll(" ", "");
+			} while (string1.length() == 0);
+
+			String[] arr = string1.split("0x");
+			int[] sensor = new int[arr.length];
+
+			for (int i = 1; i < arr.length; i++) {
+				sensor[i - 1] = Integer.parseInt(arr[i], 16);
+			}
+
+			for (int i : sensor) {
+				System.out.print(i + " ");
+			}
+			int links = sensor[5];
+			int rechts = sensor[6];
+
+			if (rechts <= 50 || links <= 30) {
+				System.out.println(" " + links + " " + rechts);
+				return true;
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+		return false;
+	}
+
+	
+
 }
